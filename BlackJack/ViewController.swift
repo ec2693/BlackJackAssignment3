@@ -1,68 +1,38 @@
 //
 //  ViewController.swift
-//  BlackJack
+//  BlackJackExtension
 //
-//  Created by Era Chaudhary on 3/31/15.
+//  Created by Era Chaudhary on 3/3/15.
 //  Copyright (c) 2015 Era Chaudhary. All rights reserved.
 //
 
 import UIKit
 
 class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
-    
-    
-    
-    @IBOutlet weak var player1Cards: UILabel!
-    
-    @IBOutlet weak var player1Balance:UILabel!
-    
-    @IBOutlet weak var player1Bet: UILabel!
-    
-    @IBOutlet weak var player2Cards: UILabel!
-    
-    @IBOutlet weak var player2Balance:UILabel!
-    
-    @IBOutlet weak var player2Bet: UILabel!
     
     @IBOutlet weak var bet1: UITextField!
     
     @IBOutlet weak var bet2: UITextField!
     
-    @IBOutlet weak var player1View: UIView!
+    @IBOutlet weak var bet3: UITextField!
     
-    @IBOutlet weak var dealerView: UIView!
+    @IBOutlet weak var bet4: UITextField!
     
-    @IBOutlet weak var player2View: UIView!
+    @IBOutlet weak var cards1: UILabel!
     
-    @IBOutlet weak var player1Card1: UIImageView!
+    @IBOutlet weak var cards2: UILabel!
     
-    @IBOutlet weak var player1Card2: UIImageView!
-   
-    @IBOutlet weak var dealerCard1: UIImageView!
-       
-    @IBOutlet weak var player2Card1: UIImageView!
-    @IBOutlet weak var cardsView: UIView!
+    @IBOutlet weak var cards3: UILabel!
     
-    @IBOutlet weak var buttonsView: UIView!
+    @IBOutlet weak var cards4: UILabel!
     
+    @IBOutlet weak var dealerCards: UILabel!
     
+    @IBOutlet weak var state: UILabel!
     
-    var backupPlayerCard1View = UIView()
+    @IBOutlet weak var balance: UILabel!
     
-    var backupPlayerCard2View = UIView()
-    
-    var playerViewBackUp = UIView()
     
     var playerList:[Player] = []
     
@@ -78,60 +48,49 @@ class ViewController: UIViewController {
     
     var numberOfDecksInShoe :Int = 2
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        
+    }
     
     
-    @IBAction func deal(sender: AnyObject) {
-    
-        clearScreen()
+    @IBAction func deal(sender: UIButton) {
+        
+        //clearScreen()
         
         
         if numberOfGames%5 == 0 {
             shoe.createShoe(numberOfDecksInShoe)
         }
-        
-        for i in 1...player1View.subviews.count-1{
-            println(player1View.subviews[i])
-        }
-        
-        for subview in player1View.subviews{
-            println(subview)
-            subview.removeFromSuperview()
-        }
-        player1View.addSubview(backupPlayerCard1View)
-        player1View.addSubview(backupPlayerCard2View)
-        
-        
         dealer.initializeDealer()
         numberOfGames++;
         for i in 1...numberOfPlayers {
             initialize(i)
-           // println(i)
+            println(i)
             //var player = playerList[i-1]
+            
             //validations(playerList[i-1])
         }
+        println(playerList[0])
         display()
     }
     
     
     
-
-    @IBAction func hit(sender: AnyObject) {
     
+    @IBAction func hit(sender: UIButton) {
         for i in 1...numberOfPlayers{
             //println(playerList[i]);
             var player = playerList[i-1]
-    
+            
             if(playerList[i-1].playerStatus == PlayerStatus.Turn){
                 println("insideHit")
                 player.playerCards.append(shoe.getCardFromShoe())
-                if(i == 1){
-                    addCardsToView(player.playerCards,parentView: player1View, isPlayerView: true, currentView: player1Card1,addAllCards: false)
-                }else{
-                    addCardsToView(player.playerCards, parentView: player1View,  isPlayerView: false,  currentView: player1Card2,addAllCards: false)
-
-                }
-            }
-            
                 if(player.playerSum == 21){
                     playerList[i-1].playerStatus = PlayerStatus.BlackJack
                     display()
@@ -154,13 +113,13 @@ class ViewController: UIViewController {
                 println(playerList[0])
                 display()
             }
+        }
+        
+        
+        
     }
     
-    
-        
-        
     @IBAction func stand(sender: AnyObject) {
-    
         var allPlayersPlayed = true
         for i in 1...numberOfPlayers{
             var player = playerList[i-1]
@@ -185,15 +144,17 @@ class ViewController: UIViewController {
     
     
     func clearScreen() {
-        //for i in 1...4{
+        for i in 1...4{
             playerList = []
-            //getCurrentPlayer(i).text = ""
-            //dealerCards.text = ""
+            getCurrentPlayer(i).text = ""
+            dealerCards.text = ""
             dealer = Dealer()
             
+        }
+        
     }
-
-   /* func getCurrentPlayer(index : Int) -> UILabel {
+    
+    func getCurrentPlayer(index : Int) -> UILabel {
         switch index{
         case 1:
             return cards1
@@ -208,7 +169,6 @@ class ViewController: UIViewController {
             return cards1
         }
     }
-*/
     
     
     
@@ -218,7 +178,7 @@ class ViewController: UIViewController {
         // for i in 1...numberOfPlayers {
         var players = Player()
         players.initializePlayer()
-       // players.playerBet = getPlayerBet(i-1)
+        players.playerBet = getPlayerBet(i-1)
         if(i==1){
             println(" inside initialze \(i)")
             players.playerStatus = PlayerStatus.Turn
@@ -226,23 +186,23 @@ class ViewController: UIViewController {
             players.playerStatus = PlayerStatus.Statue
         }
         playerList.append(players)
-        
+        //}
     }
     
-
+    
     
     func validations(var player : Player) {
         if(player.isBlackJack()){
-            changeBalance(player, isPlayerWon: true)
+            changeBalance(player,isPlayerWon : true)
         }else if(player.isBusted()){
-            changeBalance(player, isPlayerWon: false)
+            changeBalance(player,isPlayerWon : false)
         }
     }
     
     
     
     
-   /* func getPlayerBet(index : Int) -> Int {
+    func getPlayerBet(index : Int) -> Int {
         switch index{
         case 1:
             return bet1.text.toInt()!
@@ -256,7 +216,7 @@ class ViewController: UIViewController {
         default:
             return 0
         }
-    }*/
+    }
     
     
     
@@ -272,19 +232,22 @@ class ViewController: UIViewController {
     func display(){
         var index:Int = 1;
         var i:Int = 0
-        //balance.text = ""
-       // state.text = ""
-        for i =   numberOfPlayers; i > 0; i-- {
+        balance.text = ""
+        state.text = ""
+        for i = numberOfPlayers; i > 0; i-- {
             var player = playerList[i-1]
-            if(i == 1){
-                 addCardsToView(player.playerCards, parentView: player1View, isPlayerView: true, currentView: player1Card1,addAllCards:true)
-            }else{
-                addCardsToView(player.playerCards, parentView: player1View, isPlayerView: false, currentView: player1Card1,addAllCards:true)
+            var currentPlayer = getCurrentPlayer(i)
+            currentPlayer.text = player.getStringOfCards(player.playerCards)
+            balance.text = balance.text! + String(index) + ": " + String(playerList[i-1].balance) + " , "
+            if(player.playerStatus == PlayerStatus.BlackJack || player.playerStatus == PlayerStatus.Busted ||
+                player.playerStatus == PlayerStatus.Turn || player.playerStatus == PlayerStatus.Stand){
+                    state.text = state.text! + String(i) + ": " + player.playerStatus.rawValue+","
             }
-            
-                        index = index+1
+            index = index+1
         }
-                displayDealerCards(false)
+        println(cards1.text)
+        println(cards2.text)
+        displayDealer(false)
     }
     
     
@@ -321,114 +284,29 @@ class ViewController: UIViewController {
             }
             
         }
-        displayDealerCards(true)
+        displayDealer(true)
         display()
     }
     
-    func displayDealerCards(var showFullCards : Bool){
-        var tempString = ""
-        let widthStandard = 50
-        let heightStandard = 75
-        let xdiff : CGFloat = CGFloat(20)
-        let ydiff : CGFloat = CGFloat(0)
-        let dealerFrame = dealerCard1.frame.size
-        let width1 = dealerFrame.width
-        let height1 = dealerFrame.height
-        let x = dealerCard1.frame.origin.x
-        let y = dealerCard1.frame.origin.y
-        for i in 1...dealer.dealerCards.count{
-            if (i == 1){
-                if(showFullCards){
-                    let newCardView : UIView = createView(x, y: y , width : width1,height : height1, imageName: "card"+String(dealer.dealerCards[i-1]))
-                    dealerView.addSubview(newCardView)
-                    continue
-                
-                }else{
-                    let newCardView : UIView = createView(x, y: y , width : width1,height : height1, imageName: "back");                   dealerView.addSubview(newCardView)
-                    continue
-                }
-            }else{
-                let newCardView : UIView  = createView(x + (CGFloat(i)*xdiff), y: y+(CGFloat(i)*ydiff), width : width1,height : height1, imageName: "card" + String(dealer.dealerCards[i-1]))
-                        dealerView.addSubview(newCardView)
-                
-            }
-            
-            
-        }
+    func displayDealer(var showFullCards : Bool){
+        var dealer_card = dealer.dealerCards
         
-        
-    }
-
-
-    
-    func createView(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, imageName: String) -> UIView{
-        
-        let Frame : CGRect = CGRectMake(x,y,width,height)
-        var view : UIView = UIView(frame:Frame)
-        var image = UIImage(named: imageName)
-        if UIDevice.currentDevice().userInterfaceIdiom == UIUserInterfaceIdiom.Phone{
-            image = imageWithImage(image!, scaledToSize:CGSize(width: 50,height:75))
-            }
-        let imageView =  UIImageView(image: image)
-        view.addSubview(imageView)
-        return view
-        
-    }
-    
-    
-    func imageWithImage(image:UIImage,scaledToSize newSize: CGSize) -> UIImage{
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
-        image.drawInRect(CGRectMake(0, 0, newSize.width, newSize.height))
-        var newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return newImage
-    }
-    
-    
-func addCardsToView(cards :[Int] ,parentView : UIView, isPlayerView : Bool, currentView :UIView, addAllCards : Bool){
-    var xdiff : CGFloat = 0;
-    var ydiff : CGFloat = 0;
-    var currentStart = currentView.frame.size
-    if(isPlayerView){
-        xdiff = CGFloat(25)
-        ydiff = CGFloat(25)
-    }else{
-        xdiff = CGFloat(-25)
-        ydiff = CGFloat(25)
-    }
-    
-    var width1 = currentStart.width
-    var height1 = currentStart.height
-    
-    var x = currentView.frame.origin.x
-    var y = currentView.frame.origin.y
-    
-    for i in 1...cards.count{
-        if(i==1){
-            let newCardView : UIView = createView(x, y: y , width : width1,height : height1, imageName: "card"+String(cards[i-1]))
-            parentView.addSubview(newCardView)
-            continue
+        if(!showFullCards){
+            dealerCards.text = "X"
         }else{
-            let newCardView : UIView = createView(x+(CGFloat(i)*xdiff), y: y+(CGFloat(i)*ydiff), width: width1, height: height1, imageName: "card"+String(cards[i-1]))
+            dealerCards.text = String(dealer_card[0])
+        }
+        for var i = dealer_card.count ; i>0 ; i-- {
+            dealerCards.text = dealerCards.text! + " , " + String(dealer_card[i-1])
         }
         
-        
-        }
-    
     }
+    
+    
+    
+    
+    
 }
-    
-
-
-    
-    
-    
-
-
-
-
-
-
 
 
 
